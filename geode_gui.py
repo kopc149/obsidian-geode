@@ -239,10 +239,17 @@ class SettingsDialog(QDialog):
     def _setup_ui(self):
         """Set up the settings dialog UI."""
         self.setWindowTitle("Geode Settings")
-        self.setMinimumWidth(600)
-        self.setMinimumHeight(400)
+        self.setMinimumWidth(500)
+        self.setMinimumHeight(600)
         
         layout = QVBoxLayout(self)
+        layout.setSpacing(20)
+        
+        # Title
+        title = QLabel("🪨 Geode Configuration")
+        title.setStyleSheet("font-size: 20px; font-weight: bold; margin-bottom: 10px;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
         
         # Create tabs for different setting categories
         tab_widget = QTabWidget()
@@ -251,9 +258,16 @@ class SettingsDialog(QDialog):
         # Core Settings Tab
         core_tab = QWidget()
         core_layout = QVBoxLayout(core_tab)
-        core_form = QFormLayout()
+        core_layout.setSpacing(15)
         
-        # AI Provider selection
+        # AI Provider Section
+        ai_group = QGroupBox("AI Provider")
+        ai_layout = QVBoxLayout(ai_group)
+        ai_layout.setSpacing(10)
+        
+        provider_layout = QHBoxLayout()
+        provider_layout.addWidget(QLabel("Provider:"))
+        
         self.ai_provider_combo = QComboBox()
         self.ai_provider_combo.addItems([
             "gemini", "claude", "openai", "cohere", 
@@ -261,62 +275,69 @@ class SettingsDialog(QDialog):
         ])
         self.ai_provider_combo.setCurrentText(self.config.ai_provider)
         self.ai_provider_combo.currentTextChanged.connect(self._on_provider_changed)
+        provider_layout.addWidget(self.ai_provider_combo)
+        provider_layout.addStretch()
         
-        # API Key fields
-        self.gemini_key_edit = QLineEdit(self.config.gemini_api_key)
-        self.gemini_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        ai_layout.addLayout(provider_layout)
         
-        self.claude_key_edit = QLineEdit(self.config.claude_api_key)
-        self.claude_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        # Simple API key field based on selected provider
+        self.current_api_key_edit = QLineEdit()
+        self.current_api_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.current_api_key_edit.setMinimumHeight(40)
+        self.current_api_key_edit.setPlaceholderText("Enter your API key here...")
         
-        self.openai_key_edit = QLineEdit(self.config.openai_api_key)
-        self.openai_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        # Create simple form
+        simple_form = QFormLayout()
+        simple_form.setSpacing(15)
+        simple_form.addRow("API Key:", self.current_api_key_edit)
         
-        self.cohere_key_edit = QLineEdit(self.config.cohere_api_key)
-        self.cohere_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        ai_layout.addLayout(simple_form)
+        core_layout.addWidget(ai_group)
         
-        self.mistral_key_edit = QLineEdit(self.config.mistral_api_key)
-        self.mistral_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        
-        self.perplexity_key_edit = QLineEdit(self.config.perplexity_api_key)
-        self.perplexity_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        
-        self.together_key_edit = QLineEdit(self.config.together_api_key)
-        self.together_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
-        
-        # Ollama URL field (no API key needed)
-        self.ollama_url_edit = QLineEdit(self.config.ollama_base_url)
+        # Obsidian Settings Section
+        obs_group = QGroupBox("Obsidian Connection")
+        obs_layout = QFormLayout(obs_group)
+        obs_layout.setSpacing(10)
         
         self.obsidian_key_edit = QLineEdit(self.config.obsidian_api_key)
         self.obsidian_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.obsidian_key_edit.setPlaceholderText("Enter Obsidian Local REST API key...")
+        
+        self.port_edit = QLineEdit(str(self.config.obsidian_port))
+        self.port_edit.setPlaceholderText("27124")
+        
+        obs_layout.addRow("API Key:", self.obsidian_key_edit)
+        obs_layout.addRow("Port:", self.port_edit)
+        
+        core_layout.addWidget(obs_group)
+        
+        # Model Settings Section
+        model_group = QGroupBox("Model Configuration")
+        model_layout = QVBoxLayout(model_group)
+        model_layout.setSpacing(10)
+        
+        # Model info text
+        model_info = QLabel("💡 Select a model from the dropdown or type your own custom model name")
+        model_info.setStyleSheet("color: #6b7280; font-size: 11px; margin-bottom: 5px;")
+        model_layout.addWidget(model_info)
         
         # Model selection
+        model_form = QFormLayout()
+        model_form.setSpacing(5)
+        
         self.model_combo = QComboBox()
         self.model_combo.setEditable(True)
         self._update_available_models()
         self.model_combo.setCurrentText(self.config.model_name)
         
-        self.port_edit = QLineEdit(str(self.config.obsidian_port))
+        model_form.addRow("Model:", self.model_combo)
+        model_layout.addLayout(model_form)
+        core_layout.addWidget(model_group)
         
-        core_form.addRow("AI Provider:", self.ai_provider_combo)
-        core_form.addRow("Gemini API Key:", self.gemini_key_edit)
-        core_form.addRow("Claude API Key:", self.claude_key_edit)
-        core_form.addRow("OpenAI API Key:", self.openai_key_edit)
-        core_form.addRow("Cohere API Key:", self.cohere_key_edit)
-        core_form.addRow("Mistral API Key:", self.mistral_key_edit)
-        core_form.addRow("Perplexity API Key:", self.perplexity_key_edit)
-        core_form.addRow("Together API Key:", self.together_key_edit)
-        core_form.addRow("Ollama Base URL:", self.ollama_url_edit)
-        core_form.addRow("Obsidian API Key:", self.obsidian_key_edit)
-        core_form.addRow("AI Model:", self.model_combo)
-        core_form.addRow("Obsidian Port:", self.port_edit)
+        # No need to hide fields - all are visible
         
-        # Initially show/hide API key fields based on selected provider
-        self._on_provider_changed(self.config.ai_provider)
-        
-        core_layout.addLayout(core_form)
         core_layout.addStretch()
-        tab_widget.addTab(core_tab, "Core Settings")
+        tab_widget.addTab(core_tab, "Essential Settings")
         
         # Optional Extensions Tab
         extensions_tab = QWidget()
@@ -333,8 +354,8 @@ class SettingsDialog(QDialog):
         mcp_layout.addWidget(self.mcp_enabled_checkbox)
         
         # MCP info label
-        mcp_info = QLabel("💡 MCP (Model Context Protocol) allows you to connect additional tools and capabilities.\n"
-                         "This is completely optional - Geode works perfectly with just Obsidian integration.\n"
+        mcp_info = QLabel("💡 MCP (Model Context Protocol) allows you to connect additional tools and capabilities.\\n"
+                         "This is completely optional - Geode works perfectly with just Obsidian integration.\\n"
                          "🎯 Best with: Claude, OpenAI, Cohere, Mistral, Together AI")
         mcp_info.setWordWrap(True)
         mcp_info.setStyleSheet("color: #888; font-size: 12px; margin: 10px 0;")
@@ -357,31 +378,217 @@ class SettingsDialog(QDialog):
         extensions_layout.addStretch()
         tab_widget.addTab(extensions_tab, "Optional Extensions")
         
+        # Acknowledgments Tab
+        ack_tab = QWidget()
+        ack_layout = QVBoxLayout(ack_tab)
+        ack_layout.setSpacing(15)
+        
+        # Title
+        ack_title = QLabel("🙏 Acknowledgments")
+        ack_title.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 10px;")
+        ack_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        ack_layout.addWidget(ack_title)
+        
+        # Essential Tools Section
+        tools_group = QGroupBox("Essential Tools")
+        tools_layout = QVBoxLayout(tools_group)
+        
+        # Obsidian
+        obsidian_btn = QPushButton("📝 Obsidian - Knowledge Management Platform")
+        obsidian_btn.setStyleSheet("""
+            QPushButton {
+                text-align: left; 
+                padding: 12px; 
+                background: #f8f9fa; 
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                color: #495057;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background: #e9ecef;
+                border-color: #adb5bd;
+            }
+        """)
+        obsidian_btn.clicked.connect(lambda: self.open_url("https://obsidian.md/"))
+        tools_layout.addWidget(obsidian_btn)
+        
+        # Local REST API Plugin
+        rest_api_btn = QPushButton("🔌 Local REST API Plugin - Vault Integration")
+        rest_api_btn.setStyleSheet("""
+            QPushButton {
+                text-align: left; 
+                padding: 12px; 
+                background: #f8f9fa; 
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                color: #495057;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background: #e9ecef;
+                border-color: #adb5bd;
+            }
+        """)
+        rest_api_btn.clicked.connect(lambda: self.open_url("https://github.com/coddingtonbear/obsidian-local-rest-api"))
+        tools_layout.addWidget(rest_api_btn)
+        
+        # MCP Tools Plugin
+        mcp_tools_btn = QPushButton("🛠️ MCP Tools Plugin - Enhanced Capabilities")
+        mcp_tools_btn.setStyleSheet("""
+            QPushButton {
+                text-align: left; 
+                padding: 12px; 
+                background: #f8f9fa; 
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                color: #495057;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background: #e9ecef;
+                border-color: #adb5bd;
+            }
+        """)
+        mcp_tools_btn.clicked.connect(lambda: self.open_url("https://github.com/calclavia/obsidian-mcp"))
+        tools_layout.addWidget(mcp_tools_btn)
+        
+        ack_layout.addWidget(tools_group)
+        
+        # AI Providers Section
+        ai_group = QGroupBox("AI Technology Partners")
+        ai_layout = QVBoxLayout(ai_group)
+        
+        ai_info = QLabel("""This project leverages cutting-edge AI models from leading providers:
+        
+🧠 <b>Google Gemini</b> - Advanced reasoning and multimodal understanding
+🎯 <b>Anthropic Claude</b> - Exceptional writing and analysis capabilities
+⚡ <b>OpenAI GPT</b> - Pioneering conversational AI technology
+🌐 <b>Cohere, Mistral, Perplexity, Together AI</b> - Specialized AI solutions
+🏠 <b>Ollama</b> - Local AI model deployment""")
+        ai_info.setWordWrap(True)
+        ai_info.setStyleSheet("color: #555; font-size: 12px; line-height: 1.4;")
+        ai_layout.addWidget(ai_info)
+        
+        ack_layout.addWidget(ai_group)
+        
+        # Development Section
+        dev_group = QGroupBox("Development")
+        dev_layout = QVBoxLayout(dev_group)
+        
+        dev_info = QLabel("""Built with:
+        
+🐍 <b>Python & PyQt6</b> - Desktop application framework
+🎨 <b>Material Design</b> - Modern UI theming
+🔧 <b>AI-Assisted Development</b> - Enhanced by AI collaboration""")
+        dev_info.setWordWrap(True)
+        dev_info.setStyleSheet("color: #555; font-size: 12px; line-height: 1.4;")
+        dev_layout.addWidget(dev_info)
+        
+        ack_layout.addWidget(dev_group)
+        ack_layout.addStretch()
+        
+        tab_widget.addTab(ack_tab, "About & Links")
+        
         # Add buttons
         button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
         layout.addWidget(button_box)
     
+    def open_url(self, url: str):
+        """Open URL in default browser"""
+        from PyQt6.QtGui import QDesktopServices
+        from PyQt6.QtCore import QUrl
+        QDesktopServices.openUrl(QUrl(url))
+        
+    def _create_api_key_fields(self):
+        """Create all API key input fields."""
+        # API Key fields with proper styling
+        api_key_style = """
+            QLineEdit {
+                background-color: #2d3748;
+                color: #ffffff;
+                border: 1px solid #4a5568;
+                border-radius: 4px;
+                padding: 8px;
+                font-size: 13px;
+            }
+            QLineEdit:focus {
+                border-color: #a995f2;
+                background-color: #1a202c;
+            }
+        """
+        
+        self.gemini_key_edit = QLineEdit(self.config.gemini_api_key)
+        self.gemini_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.gemini_key_edit.setPlaceholderText("Enter Gemini API key...")
+        self.gemini_key_edit.setMinimumHeight(35)
+        self.gemini_key_edit.setStyleSheet(api_key_style)
+        
+        self.claude_key_edit = QLineEdit(self.config.claude_api_key)
+        self.claude_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.claude_key_edit.setPlaceholderText("Enter Claude API key...")
+        self.claude_key_edit.setMinimumHeight(35)
+        self.claude_key_edit.setStyleSheet(api_key_style)
+        
+        self.openai_key_edit = QLineEdit(self.config.openai_api_key)
+        self.openai_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.openai_key_edit.setPlaceholderText("Enter OpenAI API key...")
+        self.openai_key_edit.setMinimumHeight(35)
+        self.openai_key_edit.setStyleSheet(api_key_style)
+        
+        self.cohere_key_edit = QLineEdit(self.config.cohere_api_key)
+        self.cohere_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.cohere_key_edit.setPlaceholderText("Enter Cohere API key...")
+        self.cohere_key_edit.setMinimumHeight(35)
+        self.cohere_key_edit.setStyleSheet(api_key_style)
+        
+        self.mistral_key_edit = QLineEdit(self.config.mistral_api_key)
+        self.mistral_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.mistral_key_edit.setPlaceholderText("Enter Mistral API key...")
+        self.mistral_key_edit.setMinimumHeight(35)
+        self.mistral_key_edit.setStyleSheet(api_key_style)
+        
+        self.perplexity_key_edit = QLineEdit(self.config.perplexity_api_key)
+        self.perplexity_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.perplexity_key_edit.setPlaceholderText("Enter Perplexity API key...")
+        self.perplexity_key_edit.setMinimumHeight(35)
+        self.perplexity_key_edit.setStyleSheet(api_key_style)
+        
+        self.together_key_edit = QLineEdit(self.config.together_api_key)
+        self.together_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.together_key_edit.setPlaceholderText("Enter Together API key...")
+        self.together_key_edit.setMinimumHeight(35)
+        self.together_key_edit.setStyleSheet(api_key_style)
+        
+        # Ollama URL field (no API key needed)
+        self.ollama_url_edit = QLineEdit(self.config.ollama_base_url)
+        self.ollama_url_edit.setPlaceholderText("http://localhost:11434")
+        self.ollama_url_edit.setMinimumHeight(35)
+        self.ollama_url_edit.setStyleSheet(api_key_style)
+        
+        # Store field mappings for easy access
+        self.provider_fields = {
+            "gemini": ("API Key:", self.gemini_key_edit),
+            "claude": ("API Key:", self.claude_key_edit),
+            "openai": ("API Key:", self.openai_key_edit),
+            "cohere": ("API Key:", self.cohere_key_edit),
+            "mistral": ("API Key:", self.mistral_key_edit),
+            "perplexity": ("API Key:", self.perplexity_key_edit),
+            "together": ("API Key:", self.together_key_edit),
+            "ollama": ("Base URL:", self.ollama_url_edit),
+        }
+    
     def _on_provider_changed(self, provider: str):
         """Handle AI provider selection change."""
-        # Show/hide relevant API key fields
-        self.gemini_key_edit.setVisible(provider == "gemini")
-        self.claude_key_edit.setVisible(provider == "claude")
-        self.openai_key_edit.setVisible(provider == "openai")
-        self.cohere_key_edit.setVisible(provider == "cohere")
-        self.mistral_key_edit.setVisible(provider == "mistral")
-        self.perplexity_key_edit.setVisible(provider == "perplexity")
-        self.together_key_edit.setVisible(provider == "together")
-        self.ollama_url_edit.setVisible(provider == "ollama")
-        
-        # Update available models
+        # Just update available models - all API key fields are always visible
         self._update_available_models()
         
         # Update MCP compatibility info
         if hasattr(self, 'mcp_status_label'):
             if provider in ["claude", "openai", "cohere", "mistral", "together"]:
-                self.mcp_status_label.setText("Status: MCP compatible provider selected")
+                self.mcp_status_label.setText("✅ MCP compatible provider selected")
                 self.mcp_status_label.setStyleSheet("color: #4ade80; font-size: 11px;")
             elif provider == "ollama":
                 self.mcp_status_label.setText("Status: Local provider - MCP may work depending on model")
@@ -402,7 +609,7 @@ class SettingsDialog(QDialog):
             # Set default model for provider
             defaults = {
                 "gemini": "gemini-2.5-pro",
-                "claude": "claude-3-5-sonnet-20241022", 
+                "claude": "claude-sonnet-4-20250514", 
                 "openai": "gpt-4o",
                 "cohere": "command-r-plus",
                 "mistral": "mistral-large-latest",

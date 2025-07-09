@@ -1,6 +1,6 @@
 {
-  "gemini_api_key": "GEMINI API KEY GOES HERE",
-  "obsidian_api_key": "OBSIDIAN LOCAL API KEY GOES HERE",
+  "gemini_api_key": "",
+  "obsidian_api_key": "",
   "obsidian_port": "27124",
   "obsidian_host": "127.0.0.1",
   "verify_ssl": false,

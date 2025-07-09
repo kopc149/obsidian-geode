@@ -292,7 +292,7 @@ class Config:
         provider = provider or self.ai_provider
         recommendations = {
             "gemini": "gemini-2.5-pro",  # Best balance of speed and quality
-            "claude": "claude-3-5-sonnet-20241022",  # Best for writing and analysis
+            "claude": "claude-sonnet-4-20250514",  # Latest and most capable Claude model
             "openai": "gpt-4o",  # Most popular OpenAI model
             "cohere": "command-r-plus",  # Best Cohere model for complex tasks
             "mistral": "mistral-large-latest",  # Most capable Mistral model
@@ -308,10 +308,14 @@ class Config:
             "gemini": [
                 "gemini-2.5-pro",
                 "gemini-2.5-flash",
+                "gemini-2.0-flash-exp",
                 "gemini-1.5-pro",
                 "gemini-1.5-flash"
             ],
             "claude": [
+                "claude-sonnet-4-20250514",
+                "claude-opus-4-20250514",
+                "claude-3-7-sonnet",
                 "claude-3-5-sonnet-20241022",
                 "claude-3-5-haiku-20241022",
                 "claude-3-opus-20240229",
@@ -319,6 +323,12 @@ class Config:
                 "claude-3-haiku-20240307"
             ],
             "openai": [
+                "o3-pro",
+                "o3",
+                "o3-mini",
+                "gpt-4.1",
+                "gpt-4.1-mini",
+                "gpt-4.1-nano",
                 "gpt-4o",
                 "gpt-4o-mini",
                 "gpt-4-turbo",

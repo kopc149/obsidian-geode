@@ -59,5 +59,11 @@ temp/
 plugins/
 .claude/
 
+# UI Preview and Testing
+ui_preview.py
+*_preview.py
+*_test.py
+geode_preview_*/
+
 # Development
 CLAUDE.md

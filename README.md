@@ -325,6 +325,7 @@ This project was primarily developed through AI-assisted coding and represents a
 - The amazing work put into [Obsidian](https://obsidian.md/) by the development team
 - The incredible power of **Google's Gemini AI models**
 - The essential **Obsidian Local REST API** plugin for vault integration
+- The **MCP Tools** plugin for enhanced Obsidian capabilities
 - The **PyQt6** framework for desktop applications
 - The **Python ecosystem** and its libraries
 
