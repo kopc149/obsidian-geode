@@ -1,0 +1,14 @@
+PyQt6>=6.0.0
+requests>=2.25.0
+
+# AI Provider Dependencies
+google-genai>=0.2.0  # For Gemini models
+anthropic>=0.3.0     # For Claude models (optional)
+openai>=1.0.0        # For OpenAI/Perplexity models (optional)
+cohere>=4.0.0        # For Cohere models (optional)
+mistralai>=0.4.0     # For Mistral models (optional)
+together>=0.2.7      # For Together AI models (optional)
+# Note: Ollama requires local installation, no pip package needed
+
+# Optional MCP dependencies (install if you want MCP server integration)
+# mcp>=0.5.0  # Uncomment if using MCP servers
